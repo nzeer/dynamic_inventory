@@ -2,6 +2,8 @@ import pathlib as p
 from dataclasses import dataclass
 from typing import List
 
+debug = False
+
 """ =========================================================
 Dataclass for holding ansible setup facts:
   - ip (configurable)
@@ -9,6 +11,7 @@ Dataclass for holding ansible setup facts:
   - major release version
   - fqdn
 ============================================================="""
+
 
 @dataclass
 class HostInfo:
