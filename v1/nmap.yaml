@@ -1,11 +1,11 @@
 ---
 plugin: nmap
-address: 172.16.0-60.0/24
+address: 10.1.1.0/24
 strict: false
 ipv4: yes
 ipv6: no
 ports: yes
 sudo: true
 groups:
-  without_hostname: "'172.16' in name"
+  without_hostname: "'10.1' in name"
   with_ssh: "ports | selectattr('service', 'equalto', 'ssh')"
