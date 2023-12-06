@@ -12,4 +12,4 @@ ansible-playbook -i inventory gather_facts.yml
 
 # parses files in ./hosts and writes out inventory inside ./inventories
 
-python parse.py
+python parse2.py

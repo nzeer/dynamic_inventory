@@ -1,5 +1,4 @@
 # scan network
-mkdir hosts
 ansible-inventory -i nmap.yaml --export --output=hosts.json --list
 
 # convert hosts.json to inventory file
@@ -9,4 +8,4 @@ python json2yaml.py
 ansible-playbook -i inventory gather_facts.yml
 
 # parses files in ./hosts and writes out inventory inside ./inventories
-python parse.py
+python parse2.py
