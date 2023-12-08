@@ -192,7 +192,9 @@ def write_subnets(inv_file, list_unknown, list_sa, list_old_sa, list_nipr, list_
                 print("unknown ips: ", list_unknown)
             f.write("\n[unknown]\n")
             for ip in list_unknown:
-                f.write("%s\n" % ip)
+                octets = ip.split(".")
+                if octets[0] != "0" and octets[0] != "169":
+                    f.write("%s\n" % ip)
 
         if list_nipr:
             if debug:
