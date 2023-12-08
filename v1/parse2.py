@@ -91,6 +91,7 @@ def write_inventory(hosts=[], inv_dir=""):
         list_nipr=[],
         list_dev=[],
         list_stand_alone=[],
+        list_old_stand_alone=[],
         list_unknown=[],
         list_formatted_host_entries=[],
         dict_unknown_subnet={},
@@ -117,6 +118,7 @@ def write_inventory(hosts=[], inv_dir=""):
                 nipr_ip="",
                 dev_ip="",
                 stand_alone_ip="",
+                old_stand_alone_ip="",
                 unknown_subnet_ip="",
                 hostname="",
                 ip_list=[],
@@ -174,6 +176,7 @@ def write_inventory(hosts=[], inv_dir=""):
             os.path.join(inv_dir, "inventory"),
             inventory_out.get_unknown_ip_list(),
             inventory_out.get_stand_alone_ip_list(),
+            inventory_out.get_old_stand_alone_ip_list(),
             inventory_out.get_nipr_ip_list(),
             inventory_out.get_dev_ip_list(),
         )
@@ -181,7 +184,7 @@ def write_inventory(hosts=[], inv_dir=""):
         print("there was a problem")
 
 
-def write_subnets(inv_file, list_unknown, list_sa, list_nipr, list_dev):
+def write_subnets(inv_file, list_unknown, list_sa, list_old_sa, list_nipr, list_dev):
     # write out all hosts by subnet in top level inventory file
     with open(inv_file, "w") as f:
         if list_unknown:
@@ -210,6 +213,13 @@ def write_subnets(inv_file, list_unknown, list_sa, list_nipr, list_dev):
                 print("standalone ips: ", list_sa)
             f.write("\n[standalone]\n")
             for ip in list_sa:
+                f.write("%s\n" % ip)
+
+        if list_old_sa:
+            if debug:
+                print("old standalone ips: ", list_old_sa)
+            f.write("\n[old_standalone]\n")
+            for ip in list_old_sa:
                 f.write("%s\n" % ip)
 
 

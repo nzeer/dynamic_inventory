@@ -25,6 +25,7 @@ class InventoryEntry:
     dev_ip: str
     stand_alone_ip: str
     unknown_subnet_ip: str
+    old_stand_alone_ip: str
     hostname: str
     ip_list: list
     distro: str
@@ -50,6 +51,12 @@ class InventoryEntry:
 
     def set_dev_ip(self, ip):
         self.dev_ip = ip
+
+    def get_old_stand_alone_ip(self) -> str:
+        return self.old_stand_alone_ip
+
+    def set_old_stand_alone_ip(self, ip):
+        self.old_stand_alone_ip = ip
 
     def set_nipr_ip(self, ip):
         self.nipr_ip = ip
@@ -98,6 +105,8 @@ class InventoryEntry:
             self.set_stand_alone_ip(ip)
         elif octets[0] == "131":
             self.set_nipr_ip(ip)
+        elif octets[0] == "137":
+            self.set_old_stand_alone_ip(ip)
         else:
             self.set_unknown_ip(ip)
             if debug:
@@ -112,6 +121,7 @@ class Inventory:
     list_nipr: list
     list_dev: list
     list_stand_alone: list
+    list_old_stand_alone: list
     list_unknown: list
     list_formatted_host_entries: List[dict]
     dict_unknown_subnet: dict
@@ -121,6 +131,7 @@ class Inventory:
         print("nipr: ", self.get_nipr_ip_list())
         print("unknown: ", self.get_unknown_ip_list())
         print("standalone: ", self.get_stand_alone_ip_list())
+        print("old standalone: ", self.get_old_stand_alone_ip_list())
         print("formatted hosts: ", self.get_list_formatted_host_entries())
 
     def get_dict_unknown_subnet(self) -> dict:
@@ -147,6 +158,9 @@ class Inventory:
     def get_stand_alone_ip_list(self) -> list:
         return self.list_stand_alone
 
+    def get_old_stand_alone_ip_list(self) -> list:
+        return self.list_old_stand_alone
+
     def set_stand_alone_ip_list(self, ip_list=[]):
         self.list_stand_alone = ip_list
 
@@ -164,6 +178,9 @@ class Inventory:
 
     def add_stand_alone(self, ip=""):
         self.get_stand_alone_ip_list().append(ip)
+
+    def add_old_stand_alone(self, ip=""):
+        self.get_old_stand_alone_ip_list().append(ip)
 
     def add_unknown(self, ip=""):
         self.get_unknown_ip_list().append(ip)
@@ -193,6 +210,8 @@ class Inventory:
             return self.get_dev_ip_list()
         elif octets[0] == "10":
             return self.get_stand_alone_ip_list()
+        elif octets[0] == "137":
+            return self.get_old_stand_alone_ip_list()
         elif octets[0] == "131":
             return self.get_nipr_ip_list()
         else:
