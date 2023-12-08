@@ -199,7 +199,8 @@ class Inventory:
             iterator = iter(l)
             while True:
                 ip = next(iterator)
-                self.find_subnet(ip).append(ip)
+                if not ip in self.find_subnet(ip): 
+                    self.find_subnet(ip).append(ip)
 
         except StopIteration:
             pass
