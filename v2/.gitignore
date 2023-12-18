@@ -1,7 +1,0 @@
-__pycache__
-*.pyc
-hosts
-inventory
-inventories
-hosts.json
-passwd.yml
