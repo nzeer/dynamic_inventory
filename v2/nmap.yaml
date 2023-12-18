@@ -1,6 +1,6 @@
 ---
 plugin: nmap
-address: 10.1.1.0/24
+address: 172.16.0.0/24
 strict: false
 ipv4: yes
 ipv6: no

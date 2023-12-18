@@ -226,18 +226,15 @@ def write_subnets(inv_file, list_unknown, list_sa, list_old_sa, list_nipr, list_
 
 
 def create_directory_structure(inventory_directory, distro, release) -> str:
-    os_path = os.path.join(inventory_directory, distro)
+    distro_release = ("%s%sx" % (distro, release))
+    os_path = os.path.join(inventory_directory, distro_release)
     path = p.Path(os_path)
     if not os.path.exists(os_path):
         path = p.Path(os_path)
         path.mkdir()
-    release_path = os.path.join(os_path, release)
-    inventory_path = os.path.join(release_path, "inventory")
-    if not os.path.exists(release_path):
-        path = p.Path(release_path)
-        path.mkdir()
-        path = p.Path(inventory_path)
-        path.touch()
+    inventory_path = os.path.join(os_path, "inventory")
+    path = p.Path(inventory_path)
+    path.touch()
     return inventory_path
 
 
