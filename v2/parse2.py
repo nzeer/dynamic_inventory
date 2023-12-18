@@ -6,6 +6,8 @@ from libinventoryinfo import Inventory, InventoryEntry
 
 # print debug messages to the console at runtime
 debug = False
+hosts_info_directory = "./hosts"
+inventory_directory = "./inventories"
 
 """ =========================================================
 parse files in ./hosts and build inventories based off:
@@ -252,9 +254,6 @@ Define an entry point
 
 
 def main():
-    hosts_info_directory = "./hosts"
-    inventory_directory = "./inventories"
-
     # load all host info from text files (tuples) in a given directory
     hosts_loaded = load_hosts(hosts_info_directory)
     write_inventory(hosts_loaded, inventory_directory)
