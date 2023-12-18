@@ -3,15 +3,15 @@ import configparser
 import json
 import pathlib as p
 
-debug = False
+DEBUG = False
 
-json_file = "./hosts.json"
-inventory_file = "./inventory"
-hosts_directory = "./hosts"
+JSON_FILE = "./hosts.json"
+INVENTORY_FILE = "./inventory"
+HOSTS_DIRECTORY = "./hosts"
 
 # Define a function to load JSON data from a file
 def load_json(file):
-    if debug: print("using file: ", file)
+    if DEBUG: print("using file: ", file)
     # Open the file in read mode
     with open(file, "r") as f:
         # Load the JSON data and return it
@@ -20,7 +20,7 @@ def load_json(file):
 
 
 # Define a function to write data to a file
-def write_inventory(data, file):
+def write_inventory(data, file, hosts):
     myfindings = {}
     devices = []
     iplist = []
@@ -40,7 +40,7 @@ def write_inventory(data, file):
                     #if debug: print(curdict)
                 iplist.append(curdict["ip"])
             continue
-    if debug: print("\nfindings: ", myfindings)
+    if DEBUG: print("\nfindings: ", myfindings)
     with open(file, "w") as f:
         # Write the data to the file
         for d in devices:
@@ -52,7 +52,7 @@ def write_inventory(data, file):
         for entry in iplist:
             f.write("%s\n" % entry)
     # create hosts directory
-    path = p.Path(hosts_directory)
+    path = p.Path(hosts)
     if not path.exists(): path.mkdir()
 
 
@@ -63,12 +63,14 @@ def main():
     # Get the INI file name from the user input or use the default
     # ini_file = input("Enter the INI file name: ") or "./hosts.ini"
     # Call the load_json function and get the JSON data
-    json_data = load_json(json_file)
+    json_data = load_json(JSON_FILE)
+    # print json data
+    if DEBUG: print("json data: ", json_data)
     # Call the write_ini function and write the INI data to the file
-    write_inventory(json_data, inventory_file)
+    write_inventory(json_data, INVENTORY_FILE, HOSTS_DIRECTORY)
     
     # Print a success message
-    if debug: print(f"Successfully converted {json_file} to {inventory_file}")
+    if DEBUG: print(f"Successfully converted {JSON_FILE} to {INVENTORY_FILE}")
 
 
 # Check if the script is run as the main module
