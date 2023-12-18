@@ -5,9 +5,9 @@ from libhostinfo import HostInfo
 from libinventoryinfo import Inventory, InventoryEntry
 
 # print debug messages to the console at runtime
-debug = False
-hosts_info_directory = "./hosts"
-inventory_directory = "./inventories"
+DEBUG = False
+HOSTS_INFO_DIRECTORY = "./hosts"
+INVENTORY_DIRECTORY = "./inventories"
 
 """ =========================================================
 parse files in ./hosts and build inventories based off:
@@ -26,7 +26,7 @@ Return Type: HostInfo
 
 def load_host(file):
     current_host = HostInfo("", [], [], "", "")
-    if debug:
+    if DEBUG:
         print("reading file:", file)
     try:
         path = p.Path(file)
@@ -34,13 +34,12 @@ def load_host(file):
             raise RuntimeError("file does not exist.")
         else:
             # Open the file and read the tuple
-            # current_host.name, current_host.ip_list, current_host.os_info_list =
             res = eval(
                 open(
                     file,
                 ).readline()
             )
-            if debug:
+            if DEBUG:
                 print("loading host: ", res)
             return HostInfo(res[0], res[1], res[2], res[2][0], res[2][1])
     except OSError as e:
@@ -56,7 +55,7 @@ ReturnType: list of HostInfo objects
 
 
 def load_hosts(directory):
-    if debug:
+    if DEBUG:
         print("Using directory: ", directory)
     loaded_hosts = []
     host = HostInfo("", [], [], "", "")
@@ -86,7 +85,7 @@ TODO: Server groupings (custom config options)
 
 
 def write_inventory(hosts=[], inv_dir=""):
-    if debug:
+    if DEBUG:
         print("Using directory: ", inv_dir)
     inventory_out = Inventory(
         items=[],
@@ -127,26 +126,22 @@ def write_inventory(hosts=[], inv_dir=""):
                 distro="",
                 release="",
             )
-            # content: "{{ ansible_fqdn, ansible_all_ipv4_addresses, [os_distro, os_version] }}"
-            # ('localhost-live.maersk.homenet.lan', ['172.16.20.156', '172.16.30.161'], ['Fedora', '39'])
-            host = h
             # add host to inventory entry
             inventory_entry.add_host(h)
             # store inventory entry in inventory
             inventory_out.get_inventory_entries().append(inventory_entry)
             # add ip to appropriate ip list
             inventory_out.add_ip(inventory_entry.get_ip_list())
-            if debug:
+            if DEBUG:
                 print("inventory: ", inventory_out)
-            if debug:
+            if DEBUG:
                 print("inventory entry: ", inventory_entry)
             # cleanup and prepare for the next iteration
-            host = None
             inventory_entry = None
 
         # iterate through inventory entries
         for inv_entry in inventory_out.get_inventory_entries():
-            if debug:
+            if DEBUG:
                 print("parsing inventory entry: ", inv_entry)
             host = HostInfo(
                 name="",
@@ -155,7 +150,7 @@ def write_inventory(hosts=[], inv_dir=""):
                 os_distro_version_major="",
                 os_distro="",
             )
-            if debug:
+            if DEBUG:
                 print("inventory obj: ", inv_entry)
             # create distro/release directory structure, returning path to distro/release inventory file
             inv_path = create_directory_structure(
@@ -167,9 +162,9 @@ def write_inventory(hosts=[], inv_dir=""):
                 inv_path, inv_entry.get_host_name(), inv_entry.get_stand_alone_ip()
             )
 
-        if debug:
+        if DEBUG:
             print(inventory_out.get_inventory_entries())
-        if debug:
+        if DEBUG:
             print(inventory_out.print_ips())
 
         # write ./inventories/inventory file, broken up across known subnets
@@ -190,7 +185,7 @@ def write_subnets(inv_file, list_unknown, list_sa, list_old_sa, list_nipr, list_
     # write out all hosts by subnet in top level inventory file
     with open(inv_file, "w") as f:
         if list_unknown:
-            if debug:
+            if DEBUG:
                 print("unknown ips: ", list_unknown)
             f.write("\n[unknown]\n")
             for ip in list_unknown:
@@ -199,28 +194,28 @@ def write_subnets(inv_file, list_unknown, list_sa, list_old_sa, list_nipr, list_
                     f.write("%s\n" % ip)
 
         if list_nipr:
-            if debug:
+            if DEBUG:
                 print("nipr ips: ", list_nipr)
             f.write("\n[nipr]\n")
             for ip in list_nipr:
                 f.write("%s\n" % ip)
 
         if list_dev:
-            if debug:
+            if DEBUG:
                 print("dev ips: ", list_dev)
             f.write("\n[dev]\n")
             for ip in list_dev:
                 f.write("%s\n" % ip)
 
         if list_sa:
-            if debug:
+            if DEBUG:
                 print("standalone ips: ", list_sa)
             f.write("\n[standalone]\n")
             for ip in list_sa:
                 f.write("%s\n" % ip)
 
         if list_old_sa:
-            if debug:
+            if DEBUG:
                 print("old standalone ips: ", list_old_sa)
             f.write("\n[old_standalone]\n")
             for ip in list_old_sa:
@@ -230,6 +225,7 @@ def write_subnets(inv_file, list_unknown, list_sa, list_old_sa, list_nipr, list_
 def create_directory_structure(inventory_directory, distro, release) -> str:
     distro_release = ("%s%sx" % (distro, release))
     os_path = os.path.join(inventory_directory, distro_release)
+    if DEBUG: print("Using ", os_path)
     path = p.Path(os_path)
     if not os.path.exists(os_path):
         path = p.Path(os_path)
@@ -237,11 +233,16 @@ def create_directory_structure(inventory_directory, distro, release) -> str:
     inventory_path = os.path.join(os_path, "inventory")
     path = p.Path(inventory_path)
     path.touch()
+    if DEBUG: print("Successfully created: ", inventory_path)
     return inventory_path
 
 
 def write_stand_alone(inv_path, host_name, ip):
     if ip:
+        if DEBUG: 
+            print("writing: ", ("\n[%s]\n" % host_name))
+            print("writing: ", ("%s\n" % ip))
+
         file1 = open(inv_path, "a")  # append mode
         file1.write("\n[%s]\n" % host_name)
         file1.write("%s\n" % ip)
@@ -255,8 +256,8 @@ Define an entry point
 
 def main():
     # load all host info from text files (tuples) in a given directory
-    hosts_loaded = load_hosts(hosts_info_directory)
-    write_inventory(hosts_loaded, inventory_directory)
+    hosts_loaded = load_hosts(HOSTS_INFO_DIRECTORY)
+    write_inventory(hosts_loaded, INVENTORY_DIRECTORY)
 
 
 # Check if the script is run as the main module
